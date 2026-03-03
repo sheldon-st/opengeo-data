@@ -1,0 +1,42 @@
+sources:
+  # ArcGIS REST Services Directories
+  - key: esri-sample
+    name: "Esri Sample Server"
+    type: arcgis-directory
+    url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services"
+    schedule: "0 2 * * *"
+    config:
+      maxDepth: 2
+
+  # OGC WMS
+  # - key: gebco-wms
+  #   name: "GEBCO WMS (Bathymetry)"
+  #   type: ogc-wms
+  #   url: "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv"
+  #   schedule: "0 3 * * 0"
+
+  # OGC WFS
+  # - key: example-wfs
+  #   name: "Example WFS"
+  #   type: ogc-wfs
+  #   url: "https://example.com/geoserver/wfs"
+  #   schedule: "0 4 * * 0"
+
+  # OGC API Features
+  # - key: pygeoapi-demo
+  #   name: "pygeoapi Demo"
+  #   type: ogc-api
+  #   url: "https://demo.pygeoapi.io/stable"
+  #   schedule: "0 5 * * 1"
+  #   config:
+  #     conformsTo:
+  #       - features
+
+  # STAC Catalog
+  # - key: planetary-computer
+  #   name: "Microsoft Planetary Computer STAC"
+  #   type: stac
+  #   url: "https://planetarycomputer.microsoft.com/api/stac/v1"
+  #   schedule: "0 4 * * 1"
+  #   config:
+  #     maxCollections: 200
