@@ -1,4 +1,25 @@
 node_modules/
 dist/
+
+# Environment
 .env
+.env.local
+.env.*.local
+
+# Logs
 *.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Drizzle Studio
+.drizzle/
+
+CLAUDE.md
