@@ -1,5 +1,7 @@
 import type { HarvestProvider } from '../../shared/types.js';
 import { arcgisProvider } from './arcgis.js';
+import { arcgisHubProvider } from './arcgis-hub.js';
+import { arcgisPortalProvider } from './arcgis-portal.js';
 import { ogcWmsProvider } from './ogc-wms.js';
 import { ogcWfsProvider } from './ogc-wfs.js';
 import { ogcWcsProvider } from './ogc-wcs.js';
@@ -12,6 +14,8 @@ import { geojsonProvider } from './geojson.js';
 
 const providers: Record<string, HarvestProvider> = {
   'arcgis-directory': arcgisProvider,
+  'arcgis-hub': arcgisHubProvider,
+  'arcgis-portal-group': arcgisPortalProvider,
   'ogc-wms': ogcWmsProvider,
   'ogc-wfs': ogcWfsProvider,
   'ogc-wcs': ogcWcsProvider,

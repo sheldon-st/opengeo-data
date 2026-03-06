@@ -1,3 +1,4 @@
+import '../env.js';
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { db } from '../db/index.js';
@@ -23,6 +24,7 @@ async function syncSources(yamlSources: SourcesYaml['sources']): Promise<SourceC
           name: entry.name,
           url: entry.url,
           type: entry.type,
+          organization: entry.organization ?? null,
           config: entry.config ?? null,
           updatedAt: new Date(),
         })
@@ -37,6 +39,7 @@ async function syncSources(yamlSources: SourcesYaml['sources']): Promise<SourceC
           name: entry.name,
           url: entry.url,
           type: entry.type,
+          organization: entry.organization ?? null,
           config: entry.config ?? null,
         })
         .returning({ id: sources.id });

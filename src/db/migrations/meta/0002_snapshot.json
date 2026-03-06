@@ -1,6 +1,6 @@
 {
-  "id": "d0c38eae-3d83-4fa8-a086-c1dcf461a509",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "69d43423-686f-410c-a6fa-4c712bf8bcb2",
+  "prevId": "18777850-b6da-4694-8913-df4714885022",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -32,6 +32,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "organization": {
+          "name": "organization",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "title": {
           "name": "title",
@@ -96,6 +102,18 @@
         "extra_meta": {
           "name": "extra_meta",
           "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_created_at": {
+          "name": "source_created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_modified_at": {
+          "name": "source_modified_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         },
@@ -265,6 +283,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "organization": {
+          "name": "organization",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "enabled": {
           "name": "enabled",

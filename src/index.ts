@@ -1,14 +1,21 @@
+// Load .env before anything else
+import './env.js';
+
 import { buildServer } from './api/server.js';
 import { logger } from './shared/logger.js';
-
-const port = Number(process.env.PORT ?? 3000);
-const host = process.env.HOST ?? '0.0.0.0';
+import { env } from './env.js';
 
 async function main() {
   const app = await buildServer();
 
-  await app.listen({ port, host });
-  logger.info({ port, host }, 'OpenGeo Data API running');
+  await app.listen({ port: env.PORT, host: env.HOST });
+
+  logger.info('──────────────────────────────────────');
+  logger.info(`  OpenGeo Data API v0.1.0`);
+  logger.info(`  http://${env.HOST === '0.0.0.0' ? 'localhost' : env.HOST}:${env.PORT}`);
+  logger.info(`  Swagger UI: http://localhost:${env.PORT}/documentation`);
+  logger.info(`  Drizzle Studio: pnpm db:studio`);
+  logger.info('──────────────────────────────────────');
 }
 
 main().catch((err) => {

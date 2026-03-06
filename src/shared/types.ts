@@ -35,6 +35,8 @@ export interface HarvestResult {
   crs?: string[];
   keywords?: string[];
   formats?: string[];
+  sourceCreatedAt?: Date;
+  sourceModifiedAt?: Date;
   extraMeta?: Record<string, unknown>;
 }
 
@@ -52,6 +54,7 @@ export interface SourceConfig {
   name: string;
   type: string;
   url: string;
+  organization?: string;
   schedule?: string;
   config?: Record<string, unknown>;
 }
@@ -61,6 +64,7 @@ export interface SourceYamlEntry {
   name: string;
   type: string;
   url: string;
+  organization?: string;
   schedule?: string;
   config?: Record<string, unknown>;
 }

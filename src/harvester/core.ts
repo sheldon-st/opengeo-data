@@ -1,6 +1,6 @@
 import { db } from '../db/index.js';
 import { services, sources } from '../db/schema.js';
-import { eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { getProvider } from './providers/index.js';
 import type { SourceConfig } from '../shared/types.js';
 import { logger } from '../shared/logger.js';
@@ -26,14 +26,20 @@ export async function harvestSource(source: SourceConfig): Promise<void> {
           sourceId: source.id,
           url: result.url,
           serviceType: result.serviceType,
+          organization: source.organization ?? null,
           title: result.title ?? null,
           description: result.description ?? null,
-          bbox: result.bbox?.join(',') ?? null,
+          bboxXmin: result.bbox?.[0] ?? null,
+          bboxYmin: result.bbox?.[1] ?? null,
+          bboxXmax: result.bbox?.[2] ?? null,
+          bboxYmax: result.bbox?.[3] ?? null,
           layers: result.layers ?? null,
           crs: result.crs ?? null,
           keywords: result.keywords ?? null,
           formats: result.formats ?? null,
           extraMeta: result.extraMeta ?? null,
+          sourceCreatedAt: result.sourceCreatedAt ?? null,
+          sourceModifiedAt: result.sourceModifiedAt ?? null,
           healthStatus: 'healthy',
           lastCheckedAt: new Date(),
           lastSuccessAt: new Date(),
@@ -42,14 +48,20 @@ export async function harvestSource(source: SourceConfig): Promise<void> {
           target: [services.url, services.sourceId],
           set: {
             serviceType: result.serviceType,
+            organization: source.organization ?? null,
             title: result.title ?? null,
             description: result.description ?? null,
-            bbox: result.bbox?.join(',') ?? null,
+            bboxXmin: result.bbox?.[0] ?? null,
+            bboxYmin: result.bbox?.[1] ?? null,
+            bboxXmax: result.bbox?.[2] ?? null,
+            bboxYmax: result.bbox?.[3] ?? null,
             layers: result.layers ?? null,
             crs: result.crs ?? null,
             keywords: result.keywords ?? null,
             formats: result.formats ?? null,
             extraMeta: result.extraMeta ?? null,
+            sourceCreatedAt: result.sourceCreatedAt ?? null,
+            sourceModifiedAt: result.sourceModifiedAt ?? null,
             healthStatus: 'healthy',
             lastCheckedAt: new Date(),
             lastSuccessAt: new Date(),
@@ -57,13 +69,13 @@ export async function harvestSource(source: SourceConfig): Promise<void> {
           },
         });
 
-      // Update PostGIS geom column via raw SQL
-      if (result.bbox) {
-        const [xmin, ymin, xmax, ymax] = result.bbox;
-        await db.execute(
-          sql`UPDATE services SET geom = ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 4326) WHERE url = ${result.url} AND source_id = ${source.id}`,
-        );
-      }
+      // TODO: PostGIS — update geom column when PostGIS is available
+      // if (result.bbox) {
+      //   const [xmin, ymin, xmax, ymax] = result.bbox;
+      //   await db.execute(
+      //     sql`UPDATE services SET geom = ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 4326) WHERE url = ${result.url} AND source_id = ${source.id}`,
+      //   );
+      // }
 
       if (count % 50 === 0) {
         log.info({ count }, 'Harvesting in progress...');

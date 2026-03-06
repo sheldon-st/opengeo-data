@@ -1,6 +1,6 @@
 {
-  "id": "d0c38eae-3d83-4fa8-a086-c1dcf461a509",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "18777850-b6da-4694-8913-df4714885022",
+  "prevId": "d0c38eae-3d83-4fa8-a086-c1dcf461a509",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -32,6 +32,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "organization": {
+          "name": "organization",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "title": {
           "name": "title",
@@ -265,6 +271,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "organization": {
+          "name": "organization",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "enabled": {
           "name": "enabled",

@@ -1,13 +1,21 @@
 sources:
   # ArcGIS REST Services Directories
-  - key: esri-sample
-    name: "Esri Sample Server"
+  # - key: esri-sample
+  #   name: "Esri Sample Server"
+  #   type: arcgis-directory
+  #   url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services"
+  #   organization: "Esri"
+  #   schedule: "0 2 * * *"
+  #   config:
+  #     maxDepth: 2
+  - key: usacoe-sample
+    name: "US Army Core Of Engineers"
     type: arcgis-directory
-    url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services"
+    url: "https://services7.arcgis.com/n1YM8pTrFmm7L4hs/ArcGIS/rest/services"
+    organization: "USACOE"
     schedule: "0 2 * * *"
     config:
       maxDepth: 2
-
   # OGC WMS
   # - key: gebco-wms
   #   name: "GEBCO WMS (Bathymetry)"
@@ -40,3 +48,36 @@ sources:
   #   schedule: "0 4 * * 1"
   #   config:
   #     maxCollections: 200
+
+  # ArcGIS Hub (group-based)
+  - key: usdot-hub
+    name: "USDOT BTS Hub Datasets"
+    type: arcgis-hub
+    url: "https://hub.arcgis.com"
+    organization: "USDOT BTS"
+    schedule: "0 3 * * *"
+    config:
+      groups:
+        - 02d8126dfe59497a8a0771ea8f8807ff
+        - 4700230195de47569ad913b9d495b12f
+      limit: 200
+  # ArcGIS Portal Group Search
+  - key: fema-portal
+    name: "FEMA ArcGIS Portal Group"
+    type: arcgis-portal-group
+    url: "https://fema.maps.arcgis.com/sharing/rest/content/groups/a4ad974fc3664a5ebfdf2ac3fb578ffc/search"
+    organization: "FEMA"
+    schedule: "0 3 * * *"
+    config:
+      num: 100
+
+  # ArcGIS Hub (custom filter)
+  # - key: hub-custom
+  #   name: "Hub Custom Filter"
+  #   type: arcgis-hub
+  #   url: "https://hub.arcgis.com"
+  #   organization: "Example Org"
+  #   schedule: "0 4 * * *"
+  #   config:
+  #     filter: "((group IN (groupid1, groupid2)))"
+  #     limit: 100

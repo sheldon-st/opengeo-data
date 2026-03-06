@@ -1,3 +1,4 @@
+import '../env.js';
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { Cron } from 'croner';
