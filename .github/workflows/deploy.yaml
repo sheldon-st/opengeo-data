@@ -86,11 +86,14 @@ jobs:
               --docker-password=${GHCR_TOKEN} \
               --dry-run=client -o yaml | kubectl apply -f -
 
+            # Clean up any stale manual secrets from previous setup
+            kubectl delete secret opengeo-data-secrets -n opengeo --ignore-not-found
+
             helm upgrade --install opengeo-data ~/opengeo-data/helm/opengeo-data \
               --namespace opengeo \
               --set image.repository=ghcr.io/${{ github.repository }} \
               --set image.tag=${{ needs.build.outputs.image_tag }} \
               --set imagePullSecrets[0].name=ghcr-credentials \
-              --wait --timeout 120s
+              --wait --timeout 300s
         env:
           GHCR_TOKEN: ${{ secrets.GHCR_PAT }}

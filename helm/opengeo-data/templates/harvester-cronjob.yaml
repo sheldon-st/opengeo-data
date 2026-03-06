@@ -32,7 +32,7 @@ spec:
                 - name: DATABASE_URL
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.existingSecret }}
+                      name: {{ include "opengeo-data.databaseSecretName" . }}
                       key: DATABASE_URL
                 {{- range $key, $value := .Values.env }}
                 - name: {{ $key }}

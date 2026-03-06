@@ -18,6 +18,26 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        {{- if .Values.postgresql.enabled }}
+        - name: wait-for-db
+          image: postgres:16-alpine
+          command: ["sh", "-c", "until pg_isready -h {{ include "opengeo-data.fullname" . }}-postgresql -U {{ .Values.postgresql.username | default "opengeo" }}; do echo 'Waiting for PostgreSQL...'; sleep 2; done"]
+        {{- end }}
+        {{- if .Values.migrate.enabled }}
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["node", "dist/db/migrate.js"]
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "opengeo-data.databaseSecretName" . }}
+                  key: DATABASE_URL
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -36,7 +56,7 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.existingSecret }}
+                  name: {{ include "opengeo-data.databaseSecretName" . }}
                   key: DATABASE_URL
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}

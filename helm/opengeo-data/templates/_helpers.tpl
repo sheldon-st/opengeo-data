@@ -37,3 +37,14 @@ Selector labels
 app.kubernetes.io/name: {{ include "opengeo-data.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Database secret name
+*/}}
+{{- define "opengeo-data.databaseSecretName" -}}
+{{- if .Values.postgresql.enabled -}}
+{{ include "opengeo-data.fullname" . }}-db
+{{- else -}}
+{{ .Values.existingSecret }}
+{{- end -}}
+{{- end }}

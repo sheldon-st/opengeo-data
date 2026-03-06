@@ -38,14 +38,16 @@ env:
   CORS_ORIGIN: "*"
   HARVEST_CONCURRENCY: "3"
 
-# Reference an existing secret for sensitive values
-# The secret should contain: DATABASE_URL
-existingSecret: opengeo-data-secrets
+# To use an external database instead of the bundled PostgreSQL,
+# set postgresql.enabled=false and provide a secret name here.
+existingSecret: ""
 
 postgresql:
-  # Set to true to deploy a PostgreSQL instance via this chart
-  # For production, use an external database and set DATABASE_URL in the secret
-  enabled: false
+  enabled: true
+  database: opengeo
+  username: opengeo
+  password: ""  # Auto-generated if empty (kept via helm.sh/resource-policy: keep)
+  storage: 5Gi
 
 migrate:
   enabled: true
