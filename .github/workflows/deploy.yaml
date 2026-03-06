@@ -70,20 +70,9 @@ jobs:
           script: |
             export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-            # Ensure namespace exists before creating the secret
-            kubectl create namespace opengeo --dry-run=client -o yaml | kubectl apply -f -
-
-            # Ensure GHCR image pull secret exists
-            kubectl create secret docker-registry ghcr-credentials \
-              --namespace opengeo \
-              --docker-server=ghcr.io \
-              --docker-username=${{ github.actor }} \
-              --docker-password=${{ secrets.GHCR_PAT }} \
-              --dry-run=client -o yaml | kubectl apply -f -
-
             helm upgrade --install opengeo-data ~/opengeo-data/helm/opengeo-data \
               --namespace opengeo \
+              --create-namespace \
               --set image.repository=ghcr.io/${{ github.repository }} \
               --set image.tag=${{ needs.build.outputs.image_tag }} \
-              --set imagePullSecrets[0].name=ghcr-credentials \
               --wait --timeout 120s
