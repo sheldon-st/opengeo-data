@@ -3,11 +3,9 @@ name: Build & Deploy
 on:
   push:
     branches: [main]
-  workflow_dispatch:
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
 
 jobs:
   build:
@@ -15,59 +13,78 @@ jobs:
     permissions:
       contents: read
       packages: write
-
     outputs:
       image_tag: ${{ steps.meta.outputs.version }}
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
+      - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=sha,prefix=
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest
 
-      - name: Build and push Docker image
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Helm
-        uses: azure/setup-helm@v4
+      - name: Sync Helm chart to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: helm/opengeo-data/
+          target: ~/opengeo-data/
 
-      - name: Set up kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" | base64 -d > ~/.kube/config
-          chmod 600 ~/.kube/config
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: GHCR_TOKEN
+          script: |
+            export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-      - name: Deploy with Helm
-        run: |
-          helm upgrade --install opengeo-data ./helm/opengeo-data \
-            --namespace opengeo \
-            --create-namespace \
-            --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
-            --set image.tag=${{ needs.build.outputs.image_tag }} \
-            --wait \
-            --timeout 5m
+            # Ensure GHCR image pull secret exists
+            kubectl create secret docker-registry ghcr-credentials \
+              --namespace opengeo \
+              --docker-server=ghcr.io \
+              --docker-username=${{ github.actor }} \
+              --docker-password=${GHCR_TOKEN} \
+              --dry-run=client -o yaml | kubectl apply -f -
+
+            helm upgrade --install opengeo-data ~/opengeo-data/helm/opengeo-data \
+              --namespace opengeo \
+              --create-namespace \
+              --set image.repository=ghcr.io/${{ github.repository }} \
+              --set image.tag=${{ needs.build.outputs.image_tag }} \
+              --set imagePullSecrets[0].name=ghcr-credentials \
+              --wait --timeout 120s
+        env:
+          GHCR_TOKEN: ${{ secrets.GHCR_PAT }}
